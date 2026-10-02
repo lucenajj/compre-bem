@@ -1,0 +1,15 @@
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+.idea/
+*.iml
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Chunks de deploy (gerados)
+# (build/ já excluído acima)
