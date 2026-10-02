@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../store/app_store.dart';
 import '../utils/device.dart';
 import '../utils/format.dart';
+import '../utils/product_image.dart';
 
 /// Compra atual: itens escaneados, quantidades, total e finalização.
 class CartScreen extends StatelessWidget {
@@ -31,6 +32,7 @@ class CartScreen extends StatelessWidget {
                   itemBuilder: (_, i) {
                     final it = store.cart[i];
                     return ListTile(
+                      leading: productThumb(it.imageBase64),
                       title: Text(it.name,
                           style: const TextStyle(fontWeight: FontWeight.w600)),
                       subtitle: Text(

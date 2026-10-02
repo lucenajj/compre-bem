@@ -138,9 +138,14 @@ class AppStore extends ChangeNotifier {
     required String name,
     required double price,
     required String category,
+    String? imageBase64,
   }) {
-    products[barcode] =
-        Product(barcode: barcode, name: name, price: price, category: category);
+    products[barcode] = Product(
+        barcode: barcode,
+        name: name,
+        price: price,
+        category: category,
+        imageBase64: imageBase64);
     addToCart(barcode);
   }
 
@@ -157,6 +162,7 @@ class AppStore extends ChangeNotifier {
           name: p.name,
           price: p.price,
           category: p.category,
+          imageBase64: p.imageBase64,
           qty: qty));
     }
     _persist();

@@ -5,6 +5,9 @@ class CartItem {
   final String name;
   final double price;
   final String category;
+
+  /// Foto do produto (thumbnail JPEG em base64), opcional.
+  final String? imageBase64;
   int qty;
 
   CartItem({
@@ -12,6 +15,7 @@ class CartItem {
     required this.name,
     required this.price,
     required this.category,
+    this.imageBase64,
     this.qty = 1,
   });
 
@@ -22,6 +26,7 @@ class CartItem {
         name: j['name'] as String,
         price: (j['price'] as num).toDouble(),
         category: j['category'] as String? ?? 'Outros',
+        imageBase64: j['imageBase64'] as String?,
         qty: (j['qty'] as num?)?.toInt() ?? 1,
       );
 
@@ -30,6 +35,7 @@ class CartItem {
         'name': name,
         'price': price,
         'category': category,
+        'imageBase64': imageBase64,
         'qty': qty,
       };
 }

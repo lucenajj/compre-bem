@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../data/categories.dart';
 import '../store/app_store.dart';
 import '../utils/format.dart';
+import '../utils/product_image.dart';
 
 /// Modal aberto quando o código lido ainda não está cadastrado.
 class NewProductDialog extends StatefulWidget {
@@ -18,6 +19,8 @@ class _NewProductDialogState extends State<NewProductDialog> {
   final _nameCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
   String _category = appCategories.first;
+  String? _imageBase64;
+  bool _pickingPhoto = false;
 
   @override
   void dispose() {
@@ -40,6 +43,16 @@ class _NewProductDialogState extends State<NewProductDialog> {
         .showSnackBar(SnackBar(content: Text(m)));
   }
 
+  Future<void> _pickPhoto() async {
+    setState(() => _pickingPhoto = true);
+    final photo = await pickProductPhoto(context);
+    if (!mounted) return;
+    setState(() {
+      _pickingPhoto = false;
+      if (photo != null) _imageBase64 = photo;
+    });
+  }
+
   void _save() {
     final name = _nameCtrl.text.trim();
     final price = _parsePrice(_priceCtrl.text);
@@ -56,6 +69,7 @@ class _NewProductDialogState extends State<NewProductDialog> {
           name: name,
           price: price,
           category: _category,
+          imageBase64: _imageBase64,
         );
     Navigator.of(context).pop();
     ScaffoldMessenger.of(context).showSnackBar(
@@ -92,6 +106,44 @@ class _NewProductDialogState extends State<NewProductDialog> {
                   const TextInputType.numberWithOptions(decimal: true),
               textInputAction: TextInputAction.done,
               onSubmitted: (_) => _save(),
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: _pickingPhoto ? null : _pickPhoto,
+                  child: _pickingPhoto
+                      ? const SizedBox(
+                          width: 64,
+                          height: 64,
+                          child: Center(
+                              child: CircularProgressIndicator(strokeWidth: 2)),
+                        )
+                      : productThumb(_imageBase64, size: 64),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      TextButton.icon(
+                        onPressed: _pickingPhoto ? null : _pickPhoto,
+                        icon: const Icon(Icons.add_a_photo_outlined),
+                        label: Text(_imageBase64 == null
+                            ? 'Adicionar foto'
+                            : 'Trocar foto'),
+                      ),
+                      if (_imageBase64 != null)
+                        TextButton.icon(
+                          onPressed: () =>
+                              setState(() => _imageBase64 = null),
+                          icon: const Icon(Icons.delete_outline, size: 18),
+                          label: const Text('Remover'),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
