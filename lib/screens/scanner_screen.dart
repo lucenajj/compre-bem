@@ -51,9 +51,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
     final existed = store.scan(code);
     if (!mounted) return;
     if (existed) {
-      final p = store.findProduct(code)!;
+      final name = store.productName(code);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('✓ ${p.name} adicionado automaticamente')),
+        SnackBar(content: Text('✓ $name adicionado automaticamente')),
       );
     } else {
       if (_dialogOpen) return;

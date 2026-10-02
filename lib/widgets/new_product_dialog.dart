@@ -16,6 +16,7 @@ class NewProductDialog extends StatefulWidget {
 }
 
 class _NewProductDialogState extends State<NewProductDialog> {
+  final _brandCtrl = TextEditingController();
   final _nameCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
   String _category = appCategories.first;
@@ -24,6 +25,7 @@ class _NewProductDialogState extends State<NewProductDialog> {
 
   @override
   void dispose() {
+    _brandCtrl.dispose();
     _nameCtrl.dispose();
     _priceCtrl.dispose();
     super.dispose();
@@ -66,6 +68,7 @@ class _NewProductDialogState extends State<NewProductDialog> {
     }
     context.read<AppStore>().registerProduct(
           barcode: widget.barcode,
+          brand: _brandCtrl.text,
           name: name,
           price: price,
           category: _category,
@@ -90,6 +93,13 @@ class _NewProductDialogState extends State<NewProductDialog> {
             Chip(
               label: Text(widget.barcode,
                   style: const TextStyle(fontFamily: 'monospace')),
+            ),
+            TextField(
+              controller: _brandCtrl,
+              decoration: const InputDecoration(
+                  labelText: 'Nome da marca',
+                  hintText: 'Ex: Dona Nena (opcional)'),
+              textInputAction: TextInputAction.next,
             ),
             TextField(
               controller: _nameCtrl,

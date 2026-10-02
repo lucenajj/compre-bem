@@ -135,13 +135,16 @@ class AppStore extends ChangeNotifier {
   /// Cadastra produto novo (via modal) e já adiciona ao carrinho.
   void registerProduct({
     required String barcode,
+    String? brand,
     required String name,
     required double price,
     required String category,
     String? imageBase64,
   }) {
+    final b = brand?.trim();
     products[barcode] = Product(
         barcode: barcode,
+        brand: (b == null || b.isEmpty) ? null : b,
         name: name,
         price: price,
         category: category,
@@ -159,6 +162,7 @@ class AppStore extends ChangeNotifier {
     } else {
       cart.add(CartItem(
           barcode: barcode,
+          brand: p.brand,
           name: p.name,
           price: p.price,
           category: p.category,
@@ -244,10 +248,10 @@ class AppStore extends ChangeNotifier {
 
   String productName(String barcode) {
     final p = products[barcode];
-    if (p != null) return p.name;
+    if (p != null) return p.displayName;
     for (final pu in purchases) {
       for (final i in pu.items) {
-        if (i.barcode == barcode) return i.name;
+        if (i.barcode == barcode) return i.displayName;
       }
     }
     return barcode;

@@ -2,6 +2,9 @@
 /// para o histórico não mudar se o preço do catálogo mudar depois.
 class CartItem {
   final String barcode;
+
+  /// Nome da marca/empresa (ex: "Dona Nena"), opcional.
+  final String? brand;
   final String name;
   final double price;
   final String category;
@@ -12,6 +15,7 @@ class CartItem {
 
   CartItem({
     required this.barcode,
+    this.brand,
     required this.name,
     required this.price,
     required this.category,
@@ -21,8 +25,15 @@ class CartItem {
 
   double get subtotal => price * qty;
 
+  /// "Marca — Nome" ou só o nome quando não há marca.
+  String get displayName {
+    final b = brand?.trim();
+    return (b == null || b.isEmpty) ? name : '$b — $name';
+  }
+
   factory CartItem.fromJson(Map<String, dynamic> j) => CartItem(
         barcode: j['barcode'] as String,
+        brand: j['brand'] as String?,
         name: j['name'] as String,
         price: (j['price'] as num).toDouble(),
         category: j['category'] as String? ?? 'Outros',
@@ -32,6 +43,7 @@ class CartItem {
 
   Map<String, dynamic> toJson() => {
         'barcode': barcode,
+        'brand': brand,
         'name': name,
         'price': price,
         'category': category,

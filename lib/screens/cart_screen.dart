@@ -33,8 +33,19 @@ class CartScreen extends StatelessWidget {
                     final it = store.cart[i];
                     return ListTile(
                       leading: productThumb(it.imageBase64),
-                      title: Text(it.name,
-                          style: const TextStyle(fontWeight: FontWeight.w600)),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (it.brand?.trim().isNotEmpty == true)
+                            Text(it.brand!.trim(),
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey.shade600)),
+                          Text(it.name,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600)),
+                        ],
+                      ),
                       subtitle: Text(
                           '${brl.format(it.price)} cada · ${it.category}\nSubtotal: ${brl.format(it.subtotal)}'),
                       isThreeLine: true,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('dialog mostra botão de foto', (tester) async {
+  testWidgets('dialog tem foto e marca acima do nome', (tester) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(body: NewProductDialog(barcode: '123')),
@@ -11,6 +11,11 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.text('Adicionar foto'), findsOneWidget);
-    expect(find.text('Produto não encontrado'), findsOneWidget);
+    expect(find.text('Nome da marca'), findsOneWidget);
+    expect(find.text('Nome do produto'), findsOneWidget);
+    // marca aparece antes do nome do produto na ordem dos campos
+    final brandPos = tester.getTopLeft(find.text('Nome da marca')).dy;
+    final namePos = tester.getTopLeft(find.text('Nome do produto')).dy;
+    expect(brandPos, lessThan(namePos));
   });
 }
