@@ -1,8 +1,8 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../store/app_store.dart';
+import '../utils/device.dart';
 import '../utils/format.dart';
 
 /// Compra atual: itens escaneados, quantidades, total e finalização.
@@ -18,9 +18,9 @@ class CartScreen extends StatelessWidget {
           child: store.cart.isEmpty
               ? Center(
                   child: Text(
-                    kIsWeb
-                        ? '🧺 Nenhum item ainda.\nEscaneie produtos pelo app no celular.'
-                        : '🧺 Nenhum item ainda.\nEscaneie produtos na aba Escanear.',
+                    isMobileDevice
+                        ? '🧺 Nenhum item ainda.\nEscaneie produtos na aba Escanear.'
+                        : '🧺 Nenhum item ainda.\nEscaneie produtos pelo app no celular.',
                     textAlign: TextAlign.center,
                   ),
                 )

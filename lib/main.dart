@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +8,7 @@ import 'screens/dashboard_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'store/app_store.dart';
+import 'utils/device.dart';
 import 'utils/format.dart';
 
 void main() async {
@@ -70,13 +70,14 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  // No desktop (web) a aba Escanear não existe: o leitor de código
+  // No desktop a aba Escanear não existe: o leitor de código
   // de barras só faz sentido no celular, no supermercado.
-  static const _screens = [
-    if (!kIsWeb) ScannerScreen(),
-    CartScreen(),
-    CompareScreen(),
-    DashboardScreen(),
+  // (isMobileDevice vale para app nativo e navegador mobile.)
+  static final _screens = [
+    if (isMobileDevice) const ScannerScreen(),
+    const CartScreen(),
+    const CompareScreen(),
+    const DashboardScreen(),
   ];
 
   @override
@@ -98,7 +99,7 @@ class _HomeShellState extends State<HomeShell> {
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
         destinations: [
-          if (!kIsWeb)
+          if (isMobileDevice)
             const NavigationDestination(
                 icon: Icon(Icons.qr_code_scanner), label: 'Escanear'),
           NavigationDestination(

@@ -1,14 +1,14 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
 
 import '../store/app_store.dart';
+import '../utils/device.dart';
 import '../widgets/new_product_dialog.dart';
 
 /// Tela do leitor de código de barras (câmera + entrada manual).
-/// No web/desktop a câmera não aparece (não faz sentido escanear
-/// pelo notebook) — fica só a busca manual pelo código.
+/// A câmera aparece no celular (app nativo ou navegador mobile).
+/// No desktop a aba Escanear nem existe.
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
 
@@ -71,7 +71,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        if (!kIsWeb) ...[
+        if (isMobileDevice) ...[
           ClipRRect(
             borderRadius: BorderRadius.circular(16),
             child: SizedBox(
@@ -117,9 +117,9 @@ class _ScannerScreenState extends State<ScannerScreen> {
         ),
         const SizedBox(height: 8),
         Text(
-          kIsWeb
-              ? 'Digite o código de barras para buscar o produto ou cadastrá-lo.'
-              : 'Aponte a câmera para o código de barras do produto.',
+          isMobileDevice
+              ? 'Aponte a câmera para o código de barras do produto.'
+              : 'Digite o código de barras para buscar o produto ou cadastrá-lo.',
           style: const TextStyle(color: Colors.grey),
         ),
       ],
