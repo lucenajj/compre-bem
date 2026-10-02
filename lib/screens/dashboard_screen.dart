@@ -72,8 +72,8 @@ class DashboardScreen extends StatelessWidget {
                     )),
                 Center(
                   child: TextButton(
-                    onPressed: () => store.resetDemo(),
-                    child: const Text('Restaurar dados de exemplo'),
+                    onPressed: () => _confirmClear(context, store),
+                    child: const Text('Apagar todos os dados'),
                   ),
                 ),
               ],
@@ -106,6 +106,26 @@ class DashboardScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _confirmClear(BuildContext context, AppStore store) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Apagar todos os dados?'),
+        content: const Text(
+            'Isso remove produtos, carrinho e histórico de compras. Não dá para desfazer.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Cancelar')),
+          TextButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Apagar')),
+        ],
+      ),
+    );
+    if (ok == true) await store.clearAllData();
   }
 
   Widget _monthChart(BuildContext context, AppStore store, List<String> months) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../data/seed_data.dart';
+import '../data/categories.dart';
 import '../store/app_store.dart';
 import '../utils/format.dart';
 
@@ -17,7 +17,7 @@ class NewProductDialog extends StatefulWidget {
 class _NewProductDialogState extends State<NewProductDialog> {
   final _nameCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
-  String _category = seedCategories.first;
+  String _category = appCategories.first;
 
   @override
   void dispose() {
@@ -97,7 +97,7 @@ class _NewProductDialogState extends State<NewProductDialog> {
             DropdownButtonFormField<String>(
               initialValue: _category,
               decoration: const InputDecoration(labelText: 'Categoria'),
-              items: seedCategories
+              items: appCategories
                   .map((c) => DropdownMenuItem(value: c, child: Text(c)))
                   .toList(),
               onChanged: (v) => setState(() => _category = v ?? _category),

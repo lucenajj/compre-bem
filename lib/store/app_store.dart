@@ -3,12 +3,28 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data/seed_data.dart';
 import '../models/product.dart';
 import '../models/purchase.dart';
 import '../utils/format.dart';
 
 const _storageKey = 'comprebem_v1';
+
+/// Códigos de barras dos produtos de exemplo (removidos na limpeza de 2026-10-02).
+/// Usados só pela migração que apaga dados de exemplo de instalações antigas.
+const _legacySeedBarcodes = {
+  '7896036091024',
+  '7896036091031',
+  '7896036091048',
+  '7896036091055',
+  '7896036091062',
+  '7896036091079',
+  '7896036091086',
+  '7896036091093',
+  '7896036091109',
+  '7896036091116',
+  '7896036091123',
+  '7896036091130',
+};
 
 /// Agregado de um mês: total gasto, nº de itens e quantidade por produto.
 class MonthStats {
@@ -71,18 +87,26 @@ class AppStore extends ChangeNotifier {
       }
     }
     if (!ok) {
-      _seed();
+      // Primeira execução: começa vazio, sem dados de exemplo.
+      products = {};
+      purchases = [];
+      cart = [];
       await _persist();
+    } else {
+      // Migração única: remove dados de exemplo de instalações antigas.
+      final hadSeed = purchases.any((p) => p.id.startsWith('seed-')) ||
+          products.keys.any(_legacySeedBarcodes.contains);
+      if (hadSeed) {
+        purchases.removeWhere((p) => p.id.startsWith('seed-'));
+        for (final b in _legacySeedBarcodes) {
+          products.remove(b);
+        }
+        cart.removeWhere((i) => _legacySeedBarcodes.contains(i.barcode));
+        await _persist();
+      }
     }
     ready = true;
     notifyListeners();
-  }
-
-  void _seed() {
-    final ps = seedProducts();
-    products = {for (final p in ps) p.barcode: p};
-    purchases = seedPurchases(products);
-    cart = [];
   }
 
   Future<void> _persist() async {
@@ -275,10 +299,11 @@ class AppStore extends ChangeNotifier {
     return list;
   }
 
-  Future<void> resetDemo() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_storageKey);
-    _seed();
+  /// Apaga produtos, carrinho e histórico (mantém o login).
+  Future<void> clearAllData() async {
+    products = {};
+    purchases = [];
+    cart = [];
     await _persist();
     notifyListeners();
   }
