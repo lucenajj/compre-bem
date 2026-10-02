@@ -1,19 +1,21 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 
+import 'device.dart';
+
 /// Tira/seleciona a foto do produto e devolve um thumbnail JPEG
 /// (base64, lado máximo 640px, qualidade 60). Retorna null se o
 /// usuário cancelar ou a imagem for inválida.
+///
+/// No celular (app nativo ou navegador mobile) pergunta se quer tirar
+/// foto ou escolher da galeria. No desktop abre o seletor de arquivo.
 Future<String?> pickProductPhoto(BuildContext context) async {
   final picker = ImagePicker();
   ImageSource? source;
-  if (kIsWeb) {
-    source = ImageSource.gallery; // no navegador abre o seletor de arquivo
-  } else {
+  if (isMobileDevice) {
     source = await showModalBottomSheet<ImageSource>(
       context: context,
       builder: (c) => SafeArea(
@@ -34,6 +36,8 @@ Future<String?> pickProductPhoto(BuildContext context) async {
         ),
       ),
     );
+  } else {
+    source = ImageSource.gallery; // no desktop abre o seletor de arquivo
   }
   if (source == null) return null;
 
