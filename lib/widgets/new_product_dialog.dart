@@ -100,13 +100,13 @@ class _NewProductDialogState extends State<NewProductDialog> {
                   labelText: 'Nome da marca',
                   hintText: 'Ex: Dona Nena (opcional)'),
               textInputAction: TextInputAction.next,
+              autofocus: true,
             ),
             TextField(
               controller: _nameCtrl,
               decoration:
                   const InputDecoration(labelText: 'Nome do produto'),
               textInputAction: TextInputAction.next,
-              autofocus: true,
             ),
             TextField(
               controller: _priceCtrl,
