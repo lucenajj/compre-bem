@@ -91,7 +91,14 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   itemBuilder: (_, i) {
                     final p = items[i];
                     return ListTile(
-                      leading: productThumb(p.imageBase64),
+                      leading: GestureDetector(
+                        onTap: (p.imageBase64?.isNotEmpty == true)
+                            ? () => showProductImageModal(context,
+                                imageBase64: p.imageBase64,
+                                title: p.displayName)
+                            : null,
+                        child: productThumb(p.imageBase64),
+                      ),
                       title: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [

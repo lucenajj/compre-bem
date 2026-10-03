@@ -57,8 +57,7 @@ Future<String?> pickProductPhoto(BuildContext context) async {
 }
 
 /// Thumbnail do produto: foto ou ícone padrão quando não há foto.
-Widget productThumb(String? base64, {double size = 48}) {
-  if (base64 == null || base64.isEmpty) {
+Widget productThumb(String? base64, {double size = 48}) {  if (base64 == null || base64.isEmpty) {
     return Container(
       width: size,
       height: size,
@@ -86,6 +85,62 @@ Widget productThumb(String? base64, {double size = 48}) {
         ),
         child: Icon(Icons.broken_image_outlined,
             size: size * 0.55, color: Colors.grey.shade500),
+      ),
+    ),
+  );
+}
+
+/// Abre um modal com a foto do produto em tamanho maior.
+/// Não faz nada quando o produto não tem foto.
+void showProductImageModal(BuildContext context,
+    {required String? imageBase64, required String title}) {
+  if (imageBase64 == null || imageBase64.isEmpty) return;
+  showDialog(
+    context: context,
+    builder: (c) => Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(c).size.height * 0.75,
+          maxWidth: 420,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(title,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16)),
+                  ),
+                  IconButton(
+                    tooltip: 'Fechar',
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(c),
+                  ),
+                ],
+              ),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    base64Decode(imageBase64),
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => const Center(
+                        child: Icon(Icons.broken_image_outlined, size: 64)),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     ),
   );
