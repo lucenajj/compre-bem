@@ -206,6 +206,53 @@ class AppStore extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ---------- catálogo ----------
+  /// Atualiza os dados de um produto já cadastrado.
+  /// Também atualiza os itens no carrinho atual; o histórico
+  /// de compras finalizadas é mantido como estava.
+  void updateProduct({
+    required String barcode,
+    String? brand,
+    required String name,
+    required double price,
+    required String category,
+    String? imageBase64,
+  }) {
+    final b = brand?.trim();
+    final updated = Product(
+        barcode: barcode,
+        brand: (b == null || b.isEmpty) ? null : b,
+        name: name,
+        price: price,
+        category: category,
+        imageBase64: imageBase64);
+    products[barcode] = updated;
+    cart = [
+      for (final it in cart)
+        it.barcode == barcode
+            ? CartItem(
+                barcode: it.barcode,
+                brand: updated.brand,
+                name: updated.name,
+                price: updated.price,
+                category: updated.category,
+                imageBase64: updated.imageBase64,
+                qty: it.qty)
+            : it,
+    ];
+    _persist();
+    notifyListeners();
+  }
+
+  /// Exclui o produto do catálogo (e do carrinho atual).
+  /// O histórico de compras finalizadas é mantido.
+  void deleteProduct(String barcode) {
+    products.remove(barcode);
+    cart.removeWhere((i) => i.barcode == barcode);
+    _persist();
+    notifyListeners();
+  }
+
   // ---------- login ----------
   Future<void> login(String name, String email) async {
     userName = name.trim();

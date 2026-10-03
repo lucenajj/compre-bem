@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../data/categories.dart';
+import '../models/product.dart';
 import '../store/app_store.dart';
 import '../utils/format.dart';
 import '../utils/product_image.dart';
 
-/// Modal aberto quando o código lido ainda não está cadastrado.
+/// Modal de cadastro/edição de produto.
+/// Sem [existing]: abre ao ler um código ainda não cadastrado.
+/// Com [existing]: edita o produto (campos pré-preenchidos).
 class NewProductDialog extends StatefulWidget {
   final String barcode;
-  const NewProductDialog({super.key, required this.barcode});
+  final Product? existing;
+  const NewProductDialog({super.key, required this.barcode, this.existing});
 
   @override
   State<NewProductDialog> createState() => _NewProductDialogState();
@@ -22,6 +26,21 @@ class _NewProductDialogState extends State<NewProductDialog> {
   String _category = appCategories.first;
   String? _imageBase64;
   bool _pickingPhoto = false;
+
+  bool get _isEdit => widget.existing != null;
+
+  @override
+  void initState() {
+    super.initState();
+    final e = widget.existing;
+    if (e != null) {
+      _brandCtrl.text = e.brand ?? '';
+      _nameCtrl.text = e.name;
+      _priceCtrl.text = e.price.toStringAsFixed(2).replaceAll('.', ',');
+      if (appCategories.contains(e.category)) _category = e.category;
+      _imageBase64 = e.imageBase64;
+    }
+  }
 
   @override
   void dispose() {
@@ -66,30 +85,46 @@ class _NewProductDialogState extends State<NewProductDialog> {
       _err('Informe um preço válido');
       return;
     }
-    context.read<AppStore>().registerProduct(
-          barcode: widget.barcode,
-          brand: _brandCtrl.text,
-          name: name,
-          price: price,
-          category: _category,
-          imageBase64: _imageBase64,
-        );
+    final store = context.read<AppStore>();
+    if (_isEdit) {
+      store.updateProduct(
+        barcode: widget.barcode,
+        brand: _brandCtrl.text,
+        name: name,
+        price: price,
+        category: _category,
+        imageBase64: _imageBase64,
+      );
+    } else {
+      store.registerProduct(
+        barcode: widget.barcode,
+        brand: _brandCtrl.text,
+        name: name,
+        price: price,
+        category: _category,
+        imageBase64: _imageBase64,
+      );
+    }
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$name cadastrado por ${brl.format(price)}')));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(_isEdit
+            ? '$name atualizado'
+            : '$name cadastrado por ${brl.format(price)}')));
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Produto não encontrado'),
+      title: Text(_isEdit ? 'Editar produto' : 'Produto não encontrado'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Esse código ainda não está cadastrado. Complete os dados:'),
-            const SizedBox(height: 8),
+            if (!_isEdit)
+              const Text(
+                  'Esse código ainda não está cadastrado. Complete os dados:'),
+            if (!_isEdit) const SizedBox(height: 8),
             Chip(
               label: Text(widget.barcode,
                   style: const TextStyle(fontFamily: 'monospace')),
@@ -171,7 +206,8 @@ class _NewProductDialogState extends State<NewProductDialog> {
         TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: const Text('Cancelar')),
-        FilledButton(onPressed: _save, child: const Text('Salvar e adicionar')),
+        FilledButton(
+            onPressed: _save, child: Text(_isEdit ? 'Salvar' : 'Salvar e adicionar')),
       ],
     );
   }

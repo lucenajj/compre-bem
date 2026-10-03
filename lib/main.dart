@@ -6,6 +6,7 @@ import 'screens/cart_screen.dart';
 import 'screens/compare_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/products_screen.dart';
 import 'screens/scanner_screen.dart';
 import 'store/app_store.dart';
 import 'utils/device.dart';
@@ -76,6 +77,7 @@ class _HomeShellState extends State<HomeShell> {
   static final _screens = [
     if (isMobileDevice) const ScannerScreen(),
     const CartScreen(),
+    const ProductsScreen(),
     const CompareScreen(),
     const DashboardScreen(),
   ];
@@ -110,6 +112,8 @@ class _HomeShellState extends State<HomeShell> {
             ),
             label: 'Compra',
           ),
+          const NavigationDestination(
+              icon: Icon(Icons.inventory_2_outlined), label: 'Produtos'),
           const NavigationDestination(
               icon: Icon(Icons.compare_arrows), label: 'Comparar'),
           const NavigationDestination(
